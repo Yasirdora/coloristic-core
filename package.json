@@ -1,0 +1,96 @@
+{
+  "name": "@coloristic.org/core",
+  "version": "0.1.0",
+  "description": "Generate accessibility-aware semantic color palettes and production-ready design tokens.",
+  "keywords": [
+    "accessibility",
+    "color",
+    "contrast",
+    "design-tokens",
+    "oklch",
+    "palette",
+    "typescript",
+    "wcag"
+  ],
+  "author": {
+    "name": "Yasir Dora",
+    "url": "https://ysr.design"
+  },
+  "license": "MIT",
+  "homepage": "https://coloristic.org",
+  "bugs": {
+    "url": "https://github.com/yasirdora/coloristic-core/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yasirdora/coloristic-core.git"
+  },
+  "type": "module",
+  "sideEffects": false,
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "CHANGELOG.md",
+    "MIGRATION.md",
+    "SECURITY.md",
+    "CONTRIBUTING.md",
+    "CODE_OF_CONDUCT.md",
+    "docs",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true,
+    "registry": "https://registry.npmjs.org/"
+  },
+  "allowScripts": {
+    "esbuild@0.28.1": true,
+    "fsevents": false
+  },
+  "scripts": {
+    "build": "tsup",
+    "check": "npm run lint && npm run format:check && npm run typecheck && npm run test:coverage && npm run package:smoke",
+    "format": "biome format --write .",
+    "format:check": "biome format .",
+    "lint": "biome lint --error-on-warnings .",
+    "package:smoke": "node scripts/smoke-package.mjs",
+    "prepack": "npm run build",
+    "release:verify": "node scripts/verify-release.mjs",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "culori": "^4.0.2"
+  },
+  "overrides": {
+    "esbuild": "0.28.1"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.5.6",
+    "@types/culori": "^4.0.1",
+    "@vitest/coverage-v8": "^4.1.10",
+    "tsup": "^8.5.0",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.9"
+  }
+}
