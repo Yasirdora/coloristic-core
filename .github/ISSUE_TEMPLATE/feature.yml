@@ -1,0 +1,35 @@
+name: Feature or configuration request
+description: Propose a focused API, exporter, documentation, or tooling improvement.
+title: "feat: "
+labels: [enhancement, triage]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem to solve
+      description: Describe the user need rather than only the desired implementation.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed change
+      description: Include a small API or output example when applicable.
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+  - type: textarea
+    id: standards
+    attributes:
+      label: Relevant standards or references
+      description: Link public specifications for color, accessibility, or token-format changes.
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Checklist
+      options:
+        - label: I searched existing issues and can help test this change.
+          required: true

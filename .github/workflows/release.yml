@@ -1,0 +1,47 @@
+name: Publish package
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: publish-${{ github.event.release.tag_name }}
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    name: Publish to npm
+    if: github.event.release.prerelease == false
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment: npm
+    steps:
+      - name: Check out release
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ github.event.release.tag_name }}
+
+      - name: Set up Node.js
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
+        with:
+          node-version: 24
+          package-manager-cache: false
+          registry-url: https://registry.npmjs.org
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Verify release tag
+        env:
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+        run: npm run release:verify
+
+      - name: Run release gate
+        run: npm run check
+
+      - name: Publish with provenance
+        run: npm publish --provenance --access public

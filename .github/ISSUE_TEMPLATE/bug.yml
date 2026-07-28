@@ -1,0 +1,62 @@
+name: Bug report
+description: Report reproducible incorrect behavior in Coloristic Core.
+title: "bug: "
+labels: [bug, triage]
+body:
+  - type: markdown
+    attributes:
+      value: >-
+        Do not disclose vulnerabilities here. Use the private security advisory link in SECURITY.md.
+  - type: input
+    id: version
+    attributes:
+      label: Package version
+      placeholder: 0.1.0
+    validations:
+      required: true
+  - type: dropdown
+    id: runtime
+    attributes:
+      label: Runtime
+      options:
+        - Node.js 20
+        - Node.js 22
+        - Node.js 24
+        - Node.js 26
+        - Browser or bundler
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Minimal reproduction
+      description: Include the smallest input and code needed to reproduce the issue.
+      render: ts
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+      description: Include the exact error, output, or generated token fragment.
+    validations:
+      required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional context
+      description: Add operating system, package manager, screenshots, or related links when relevant.
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Checklist
+      options:
+        - label: I searched existing issues and this is not a security vulnerability.
+          required: true
