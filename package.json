@@ -1,5 +1,5 @@
 {
-  "name": "@coloristic/core",
+  "name": "@coloristic.org/core",
   "version": "0.1.0",
   "description": "Generate accessibility-aware semantic color palettes and production-ready design tokens.",
   "keywords": [
@@ -14,7 +14,7 @@
   ],
   "author": "yasirdora",
   "license": "MIT",
-  "homepage": "https://github.com/yasirdora/coloristic-core#readme",
+  "homepage": "https://coloristic.org",
   "bugs": {
     "url": "https://github.com/yasirdora/coloristic-core/issues"
   },

@@ -89,14 +89,16 @@ Before deleting site-local code, compare fixtures for every harmony mode, light 
 
 ## 6. Move from a local archive to npm
 
+The public package now uses the official domain-backed scope `@coloristic.org/core`. Replace any prerelease dependency on `@coloristic/core` and update all imports to the new scope before installing version 0.1.0.
+
 For release-candidate integration:
 
 ```sh
-npm install /absolute/path/to/coloristic-core-0.1.0.tgz
+npm install /absolute/path/to/coloristic.org-core-0.1.0.tgz
 ```
 
 After the public release:
 
 ```sh
-npm install @coloristic/core@^0.1.0
+npm install @coloristic.org/core@^0.1.0
 ```

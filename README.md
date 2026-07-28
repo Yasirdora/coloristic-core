@@ -1,10 +1,10 @@
 # Coloristic Core
 
 [![CI](https://github.com/yasirdora/coloristic-core/actions/workflows/ci.yml/badge.svg)](https://github.com/yasirdora/coloristic-core/actions/workflows/ci.yml)
-[![npm](https://img.shields.io/npm/v/@coloristic/core)](https://www.npmjs.com/package/@coloristic/core)
+[![npm](https://img.shields.io/npm/v/@coloristic.org/core)](https://www.npmjs.com/package/@coloristic.org/core)
 [![license: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-An accessibility-aware TypeScript color engine for deterministic OKLCH palettes, semantic UI roles, WCAG contrast audits, and production-ready design-token exports.
+An accessibility-aware TypeScript color engine for deterministic OKLCH palettes, semantic UI roles, WCAG contrast audits, and production-ready design-token exports. The official project website is [coloristic.org](https://coloristic.org).
 
 Coloristic Core is framework-independent, makes no network requests, and works in Node.js 20+ and modern browser toolchains.
 
@@ -13,13 +13,13 @@ Coloristic Core is framework-independent, makes no network requests, and works i
 ## Install
 
 ```sh
-npm install @coloristic/core
+npm install @coloristic.org/core
 ```
 
 ## Quick start
 
 ```ts
-import { auditPalette, createPalette, exportPalette } from "@coloristic/core";
+import { auditPalette, createPalette, exportPalette } from "@coloristic.org/core";
 
 const palette = createPalette({
   name: "Northstar",
@@ -51,7 +51,7 @@ All output is deterministic: the same valid input and options produce the same r
 Generate an OKLCH harmony:
 
 ```ts
-import { createPalette } from "@coloristic/core";
+import { createPalette } from "@coloristic.org/core";
 
 const palette = createPalette({
   name: "Product blue",
@@ -68,7 +68,7 @@ Supported harmonies are `monochromatic`, `complementary`, `split-complementary`,
 Normalize an existing palette:
 
 ```ts
-import { createPaletteFromColors } from "@coloristic/core";
+import { createPaletteFromColors } from "@coloristic.org/core";
 
 const palette = createPaletteFromColors({
   name: "Existing brand",
@@ -95,7 +95,7 @@ Every palette includes five base roles and a guaranteed foreground partner for e
 Assign roles directly when you already have normalized color choices:
 
 ```ts
-import { assignPaletteRoles, getContrastRatio } from "@coloristic/core";
+import { assignPaletteRoles, getContrastRatio } from "@coloristic.org/core";
 
 const roles = assignPaletteRoles(
   ["#111827", "#2563eb", "#f97316", "#f8fafc", "#ffffff"],
@@ -112,7 +112,7 @@ The guarantee applies to each documented `on*`/base-role pair at `targetContrast
 Audit a pairing:
 
 ```ts
-import { auditContrast } from "@coloristic/core";
+import { auditContrast } from "@coloristic.org/core";
 
 const result = auditContrast("#64748b", "#ffffff", {
   targetWcagRatio: 4.5,
@@ -126,7 +126,7 @@ if (!result.passesWcag) {
 Audit every ordered combination in a palette:
 
 ```ts
-import { auditPalette } from "@coloristic/core";
+import { auditPalette } from "@coloristic.org/core";
 
 const audit = auditPalette(palette.colors, { targetWcagRatio: 4.5 });
 
@@ -140,7 +140,7 @@ for (const failure of audit.failingPairs) {
 ## Color-vision simulation
 
 ```ts
-import { simulateColorVision } from "@coloristic/core";
+import { simulateColorVision } from "@coloristic.org/core";
 
 simulateColorVision("#ef4444", "deuteranopia");
 ```
@@ -150,7 +150,7 @@ Simulation is a design-review aid. It does not replace testing with users or ass
 ## Export formats
 
 ```ts
-import { exportPalette } from "@coloristic/core";
+import { exportPalette } from "@coloristic.org/core";
 
 exportPalette(palette, "css");
 exportPalette(palette, "scss");

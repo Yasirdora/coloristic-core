@@ -13,6 +13,7 @@ All notable changes are documented here. This project follows [Semantic Versioni
 - WCAG contrast audits, palette-wide pair reports, suggested foreground repairs, and color-vision simulation.
 - Strict color validation, including explicit rejection of non-opaque colors.
 - Portable CSS, SCSS, Tailwind, Android, iOS, JSON, GPL, ASE, and DTCG exporters.
+- Official publication under the domain-backed `@coloristic.org/core` npm scope.
 - ESM, CommonJS, and TypeScript declaration builds.
 - Automated formatting, linting, coverage, package-install smoke tests, and trusted npm publishing gates.
 

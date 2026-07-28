@@ -15,4 +15,4 @@ if (tagVersion !== packageJson.version) {
   throw new Error(`Release tag ${rawTag} does not match package version ${packageJson.version}.`);
 }
 
-console.log(`Release tag ${rawTag} matches @coloristic/core ${packageJson.version}.`);
+console.log(`Release tag ${rawTag} matches ${packageJson.name} ${packageJson.version}.`);

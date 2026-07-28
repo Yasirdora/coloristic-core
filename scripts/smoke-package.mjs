@@ -52,7 +52,7 @@ try {
 
   const esmSource = `
     import assert from "node:assert/strict";
-    import { createPalette, getContrastRatio, MAX_PALETTE_SIZE } from "@coloristic/core";
+    import { createPalette, getContrastRatio, MAX_PALETTE_SIZE } from "@coloristic.org/core";
     const palette = createPalette({ baseColor: "#2563eb", targetContrast: 4.5 });
     assert.equal(MAX_PALETTE_SIZE, 64);
     assert.ok(getContrastRatio(palette.roles.onPrimary, palette.roles.primary) >= 4.5);
@@ -60,7 +60,7 @@ try {
   `;
   const cjsSource = `
     const assert = require("node:assert/strict");
-    const { createPalette, getContrastRatio, MAX_PALETTE_SIZE } = require("@coloristic/core");
+    const { createPalette, getContrastRatio, MAX_PALETTE_SIZE } = require("@coloristic.org/core");
     const palette = createPalette({ baseColor: "#2563eb", targetContrast: 4.5 });
     assert.equal(MAX_PALETTE_SIZE, 64);
     assert.ok(getContrastRatio(palette.roles.onSurface, palette.roles.surface) >= 4.5);
