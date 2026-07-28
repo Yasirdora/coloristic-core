@@ -12,7 +12,10 @@
     "typescript",
     "wcag"
   ],
-  "author": "yasirdora",
+  "author": {
+    "name": "Yasir Dora",
+    "url": "https://ysr.design"
+  },
   "license": "MIT",
   "homepage": "https://coloristic.org",
   "bugs": {

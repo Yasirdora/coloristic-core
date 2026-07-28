@@ -4,7 +4,7 @@
 [![npm](https://img.shields.io/npm/v/@coloristic.org/core)](https://www.npmjs.com/package/@coloristic.org/core)
 [![license: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-An accessibility-aware TypeScript color engine for deterministic OKLCH palettes, semantic UI roles, WCAG contrast audits, and production-ready design-token exports. The official project website is [coloristic.org](https://coloristic.org).
+An accessibility-aware TypeScript color engine for deterministic OKLCH palettes, semantic UI roles, WCAG contrast audits, and production-ready design-token exports. The official project website is [coloristic.org](https://coloristic.org). Created and maintained by [Yasir Dora](https://ysr.design).
 
 Coloristic Core is framework-independent, makes no network requests, and works in Node.js 20+ and modern browser toolchains.
 
@@ -199,4 +199,4 @@ Coloristic Core follows Semantic Versioning. While the version is `0.x`, minor r
 
 ## License
 
-[MIT](LICENSE) © 2026 yasirdora
+[MIT](LICENSE) © 2026 [Yasir Dora](https://ysr.design)
