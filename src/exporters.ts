@@ -232,10 +232,11 @@ export function toCssVariables(palette: Palette): string {
   const lines = roleEntries(validated.roles).flatMap(([role, color]) => {
     const name = toKebabCase(role);
     const values = getColorValues(color);
+    const hue = ((Math.round(values.oklch.h) % 360) + 360) % 360;
     return [
       `  --color-${name}: ${values.hex};`,
       `  --color-${name}-rgb: ${values.rgb.r} ${values.rgb.g} ${values.rgb.b};`,
-      `  --color-${name}-oklch: oklch(${(values.oklch.l * 100).toFixed(1)}% ${values.oklch.c.toFixed(3)} ${Math.round(values.oklch.h)});`,
+      `  --color-${name}-oklch: oklch(${(values.oklch.l * 100).toFixed(1)}% ${values.oklch.c.toFixed(3)} ${hue});`,
     ];
   });
   const metadata = `${validated.name} · ${validated.harmony} · sRGB`;
@@ -420,6 +421,9 @@ export function toAse(palette: Palette): Uint8Array {
  * @returns A `Uint8Array` for `ase`; every other format returns a string.
  * @throws {@link ColoristicError} when the format, palette structure, or any color is invalid.
  */
+export function exportPalette(palette: Palette, format: "ase"): Uint8Array;
+export function exportPalette(palette: Palette, format: Exclude<ExportFormat, "ase">): string;
+export function exportPalette(palette: Palette, format: ExportFormat): string | Uint8Array;
 export function exportPalette(palette: Palette, format: ExportFormat): string | Uint8Array {
   switch (format) {
     case "css":

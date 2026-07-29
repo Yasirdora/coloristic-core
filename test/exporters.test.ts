@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, expectTypeOf, it } from "vitest";
 import {
   ColoristicError,
   createPaletteFromColors,
@@ -75,6 +75,9 @@ describe("exporters", () => {
     expect(css).toContain("--color-on-primary:");
     expect(css).toContain("--color-on-highlight-oklch:");
     expect(css).toContain("Brand Pack · custom · sRGB");
+
+    const hueBoundary = createPaletteFromColors({ colors: ["#300818"], baseIndex: 0 });
+    expect(toCssVariables(hueBoundary)).toContain("--color-accent-oklch: oklch(21.4% 0.067 0);");
   });
 
   it("emits deterministic DTCG 2025.10 color objects for every role", () => {
@@ -160,6 +163,11 @@ describe("exporters", () => {
       expect(typeof exportPalette(palette, format)).toBe("string");
     }
     expect(exportPalette(palette, "ase")).toBeInstanceOf(Uint8Array);
+    expectTypeOf(exportPalette(palette, "ase")).toEqualTypeOf<Uint8Array>();
+    expectTypeOf(exportPalette(palette, "css")).toEqualTypeOf<string>();
+    expectTypeOf((format: ExportFormat) => exportPalette(palette, format)).returns.toEqualTypeOf<
+      string | Uint8Array
+    >();
     expect(() => exportPalette(palette, "yaml" as ExportFormat)).toThrowError(
       expect.objectContaining({ code: "UNSUPPORTED_FORMAT" }),
     );
