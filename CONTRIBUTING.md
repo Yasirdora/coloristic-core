@@ -26,7 +26,8 @@ Before opening a pull request, run the complete release gate:
 npm run check
 ```
 
-This checks formatting, lint rules, types, tests and coverage, ESM/CommonJS builds, and installation from the packed tarball.
+This checks formatting, lint rules, types, tests and coverage, ESM/CommonJS builds, packed runtime
+and TypeScript consumers, and the installed package license.
 
 Useful commands:
 
@@ -38,7 +39,7 @@ Useful commands:
 | `npm test` | Run the test suite once |
 | `npm run test:coverage` | Enforce coverage thresholds |
 | `npm run build` | Create ESM, CommonJS, and declarations |
-| `npm run package:smoke` | Pack, install, and load both module formats |
+| `npm run package:smoke` | Pack and verify runtime, declarations, and license contents |
 
 ## Engineering principles
 
@@ -61,7 +62,8 @@ Every new or changed public export must include TSDoc that:
 - calls out breaking behavior or runtime-specific return types;
 - avoids repeating TypeScript types without adding useful meaning.
 
-Update `README.md`, `MIGRATION.md`, exported types, and examples in the same pull request when the public contract changes.
+Update `README.md`, `CHANGELOG.md`, exported types, and examples in the same pull request when the
+public contract changes.
 
 ## Tests
 
@@ -78,6 +80,10 @@ The automated publisher uses npm trusted publishing and intentionally has no lon
 5. Confirm that the repository is public if provenance is required, and remove obsolete automation tokens after the OIDC publisher succeeds.
 
 For the manually published bootstrap version, push its exact commit and tag but do not create a GitHub Release that would ask the automated workflow to republish the same npm version. Start GitHub Release automation with the next version.
+
+For every release, update the version in both package manifests, add the dated changelog section
+and comparison links, and run `npm run release:verify -- vX.Y.Z`. Release tags must use the exact
+canonical `vX.Y.Z` form.
 
 See npm's [trusted publishing guide](https://docs.npmjs.com/trusted-publishers/) and GitHub's [deployment environment documentation](https://docs.github.com/en/actions/concepts/workflows-and-actions/deployment-environments) for the current provider-side setup.
 

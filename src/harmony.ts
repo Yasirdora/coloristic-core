@@ -4,6 +4,8 @@ import { ColoristicError } from "./errors.js";
 import { MAX_PALETTE_SIZE, type HarmonyMode } from "./types.js";
 
 const DEFAULT_COUNT = 5;
+// Finer than 8-bit sRGB quantization, while keeping collision recovery strictly bounded.
+const DISTINCT_LIGHTNESS_STEPS = 1024;
 const mapToSrgb = toGamut("rgb", "oklch");
 const GENERATED_HARMONIES = new Set<Exclude<HarmonyMode, "custom">>([
   "monochromatic",
@@ -103,14 +105,35 @@ function harmonyHue(
   }
 }
 
-function partnerColor(hue: number, base: Oklch, relativePosition: number): string {
+function partnerColorValue(hue: number, base: Oklch, relativePosition: number): Oklch {
   const lightness = Math.max(0.1, Math.min(0.92, (base.l ?? 0.55) + relativePosition * 0.3));
   const sourceChroma = base.c ?? 0;
   const chroma =
     sourceChroma <= 1e-6
       ? 0
       : Math.max(0, Math.min(0.32, sourceChroma * (1 - Math.abs(relativePosition) * 0.35)));
-  return toHex({ mode: "oklch", l: lightness, c: chroma, h: normalizeHue(hue) });
+  return { mode: "oklch", l: lightness, c: chroma, h: normalizeHue(hue) };
+}
+
+function distinctPartnerColor(
+  color: Oklch,
+  relativePosition: number,
+  usedColors: ReadonlySet<string>,
+): string {
+  const candidate = toHex(color);
+  if (!usedColors.has(candidate)) return candidate;
+
+  const preferredDirection = relativePosition < 0 ? -1 : 1;
+  for (let step = 1; step <= DISTINCT_LIGHTNESS_STEPS; step += 1) {
+    for (const direction of [preferredDirection, -preferredDirection]) {
+      const lightness = (color.l ?? 0) + (direction * step) / DISTINCT_LIGHTNESS_STEPS;
+      if (lightness < 0 || lightness > 1) continue;
+      const adjusted = toHex({ ...color, l: lightness });
+      if (!usedColors.has(adjusted)) return adjusted;
+    }
+  }
+
+  throw new ColoristicError("INVALID_COLOR", "Could not generate a distinct harmony color.");
 }
 
 /**
@@ -134,16 +157,23 @@ export function generateHarmony(
   const base = readOklch(anchor);
   const baseHue = normalizeHue(base.h);
   const maximumDistance = Math.max(anchorIndex, size - 1 - anchorIndex, 1);
+  const usedColors = new Set([anchor]);
 
   return Object.freeze(
     Array.from({ length: size }, (_, index) => {
       if (index === anchorIndex) return anchor;
       const relativeIndex = index - anchorIndex;
-      return partnerColor(
-        harmonyHue(harmony, baseHue, relativeIndex),
-        base,
-        relativeIndex / maximumDistance,
+      const color = distinctPartnerColor(
+        partnerColorValue(
+          harmonyHue(harmony, baseHue, relativeIndex),
+          base,
+          relativeIndex / maximumDistance,
+        ),
+        relativeIndex,
+        usedColors,
       );
+      usedColors.add(color);
+      return color;
     }),
   );
 }

@@ -6,6 +6,10 @@ const toLab = converter("lab");
 const toRgb = converter("rgb");
 const mapToSrgb = toGamut("rgb", "oklch");
 
+function roundedHue(hue: number | undefined): number {
+  return ((Math.round(hue ?? 0) % 360) + 360) % 360;
+}
+
 function invalidColor(input: unknown, detail = "Invalid color"): never {
   let rendered: string;
   try {
@@ -108,7 +112,7 @@ export function getColorValues(input: string): ColorValues {
       b: Math.round((rgbValue.b ?? 0) * 255),
     }),
     hsl: Object.freeze({
-      h: Math.round(hslValue.h ?? 0),
+      h: roundedHue(hslValue.h),
       s: Math.round((hslValue.s ?? 0) * 100),
       l: Math.round((hslValue.l ?? 0) * 100),
     }),

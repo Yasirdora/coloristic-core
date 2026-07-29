@@ -1,6 +1,6 @@
 {
   "name": "@coloristic.org/core",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Generate accessibility-aware semantic color palettes and production-ready design tokens.",
   "keywords": [
     "accessibility",
@@ -46,7 +46,6 @@
     "dist",
     "README.md",
     "CHANGELOG.md",
-    "MIGRATION.md",
     "SECURITY.md",
     "CONTRIBUTING.md",
     "CODE_OF_CONDUCT.md",
@@ -80,7 +79,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "culori": "^4.0.2"
+    "culori": "4.0.2"
   },
   "overrides": {
     "esbuild": "0.28.1"

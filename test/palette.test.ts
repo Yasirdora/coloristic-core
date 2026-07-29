@@ -122,6 +122,10 @@ describe("color normalization", () => {
     expect(Object.isFrozen(toSrgbComponents("#2563eb"))).toBe(true);
     expect(Object.isFrozen(normalizeColors(["#000", "#fff"]))).toBe(true);
   });
+
+  it("wraps rounded HSL hues into the canonical 0–359 range", () => {
+    expect(getColorValues("#800001").hsl.h).toBe(0);
+  });
 });
 
 describe("harmony generation", () => {
@@ -161,6 +165,31 @@ describe("harmony generation", () => {
       MAX_PALETTE_SIZE,
     );
     expect(Object.isFrozen(generateShades("#2563eb", 5))).toBe(true);
+  });
+
+  it("keeps clipped extreme-anchor harmonies distinct without changing normal output", () => {
+    expect(generateHarmony("#2563eb", "analogous", 5, 2)).toEqual([
+      "#00253e",
+      "#00488d",
+      "#2563eb",
+      "#868eff",
+      "#cfc0ff",
+    ]);
+
+    for (const anchor of ["#000000", "#ffffff"]) {
+      for (const mode of GENERATED_MODES) {
+        const colors = generateHarmony(anchor, mode, MAX_PALETTE_SIZE, 32);
+        expect(new Set(colors).size, `${anchor}/${mode}`).toBe(MAX_PALETTE_SIZE);
+        expect(colors[32]).toBe(anchor);
+        expect(
+          colors.every((color) => {
+            const { r, g, b } = getColorValues(color).rgb;
+            return r === g && g === b;
+          }),
+          `${anchor}/${mode} remains achromatic`,
+        ).toBe(true);
+      }
+    }
   });
 
   it.each([0, MAX_PALETTE_SIZE + 1, 1.5, Number.NaN, Number.POSITIVE_INFINITY])(

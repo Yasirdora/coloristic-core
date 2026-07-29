@@ -44,7 +44,12 @@ const tokens = exportPalette(palette, "dtcg");
 4. Suggests a nearby foreground repair when a pairing misses its target.
 5. Exports portable tokens for web, mobile, design tools, and Adobe workflows.
 
-All output is deterministic: the same valid input and options produce the same result.
+Output is deterministic within a release: the same valid input and options produce the same
+strings or bytes on supported runtimes. The engine uses no randomness, clock, locale, storage,
+or network state, and declares and tests Culori `4.0.2`. A consumer-level override can replace
+that resolution. Output compatibility is not promised across different Coloristic Core releases;
+preserve the tested dependency resolution and retain fixtures when exact serialized output is part
+of your application's contract.
 
 ## Create palettes
 
@@ -78,7 +83,13 @@ const palette = createPaletteFromColors({
 });
 ```
 
-Palette inputs are limited to 64 colors, also exported as `MAX_PALETTE_SIZE`. Non-opaque colors are rejected rather than composited against an assumed background; explicitly opaque syntax such as `rgba(0, 0, 0, 1)` is accepted. The resolved contrast target is available as `palette.targetContrast`.
+Palette inputs are limited to 64 colors, also exported as `MAX_PALETTE_SIZE`. `normalizeColor`
+parses CSS color syntax, maps it to sRGB with CSS Color 4 OKLCH gamut mapping, and returns lowercase
+six-digit hex. Opacity is evaluated after CSS parsing: an omitted alpha or parsed alpha of exactly
+`1` is accepted, while any other parsed alpha and the `none` keyword are rejected. CSS parsers
+clamp out-of-range alpha according to CSS rules, so a value above `100%` can parse as `1` and be
+accepted. Coloristic Core never composites transparency against an assumed background. The
+resolved contrast target is available as `palette.targetContrast`.
 
 ## Semantic roles
 
@@ -135,7 +146,10 @@ for (const failure of audit.failingPairs) {
 }
 ```
 
-`auditPalette` separates pairs according to the configured WCAG target. Contrast analysis is engineering guidance, not a certification or legal-compliance determination.
+`auditPalette` normalizes colors, collapses duplicate normalized values, excludes self-pairs, and
+audits every remaining ordered foreground/background combination. Its frozen result contains
+`n × (n - 1)` pairs for `n` unique colors. Contrast analysis is engineering guidance, not a
+certification or legal-compliance determination.
 
 ## Color-vision simulation
 
@@ -164,7 +178,10 @@ exportPalette(palette, "gpl");
 const aseBytes = exportPalette(palette, "ase");
 ```
 
-The DTCG exporter uses the [Design Tokens Community Group 2025.10 color object shape](https://www.designtokens.org/TR/2025.10/color/) with `colorSpace`, numeric `components`, `alpha`, and a hexadecimal fallback. The ASE exporter returns `Uint8Array` so callers can choose the appropriate file/download API for their runtime.
+The DTCG exporter uses the [Design Tokens Community Group 2025.10 color object shape](https://www.designtokens.org/TR/2025.10/color/) with `colorSpace`, numeric `components`, `alpha`, and a hexadecimal fallback. All formats return strings except ASE, which returns `Uint8Array`.
+Exporters validate and normalize the complete palette but never write files, start downloads, or
+access the network. Literal `exportPalette` formats have narrowed return types; a runtime
+`ExportFormat` variable produces `string | Uint8Array` and must be narrowed by the caller.
 
 ## API map
 
@@ -178,7 +195,35 @@ The DTCG exporter uses the [Design Tokens Community Group 2025.10 color object s
 | Simulation | `simulateColorVision` |
 | Export | `exportPalette`, plus the individual `to*` exporters |
 
-Invalid colors, non-opaque colors, and out-of-range palette sizes throw `ColoristicError` with a stable machine-readable `code`.
+Common defaults and bounds:
+
+| API | Defaults and bounds |
+| --- | --- |
+| `createPalette` | `name: "Untitled palette"`, `harmony: "analogous"`, `count: 5`, `baseIndex: min(2, count - 1)`, `theme: "light"`, `targetContrast: 4.5` |
+| `createPaletteFromColors` | `name: "Untitled palette"`, `harmony: "custom"`, `baseIndex: min(2, colors.length - 1)`, `theme: "light"`, `targetContrast: 4.5` |
+| `generateHarmony` / `generateShades` | 5 colors / 11 shades; counts must be integers from 1 through 64 |
+| Role and WCAG helpers | Default target `4.5`; contrast targets must be finite numbers from 1 through 21, inclusive |
+| Names and palettes | Names are limited to 120 Unicode code points; palettes contain 1 through 64 colors |
+
+`getColorValues` reports RGB as integer channels, HSL as degrees and percentages, OKLCH with
+unit lightness plus chroma and hue, and CIE Lab in its native component scale.
+
+### Error contract
+
+Invalid public input throws `ColoristicError`. Its `code` is stable for programmatic handling;
+the human-readable `message` may improve between releases.
+
+| Code | Meaning |
+| --- | --- |
+| `EMPTY_PALETTE` | No colors were supplied |
+| `INVALID_ARGUMENT` | An option, mode, name, or argument shape is unsupported |
+| `INVALID_COLOR` | A color is invalid, incomplete, non-finite, or non-opaque after parsing |
+| `INVALID_CONTRAST_TARGET` | A contrast target is outside the inclusive 1–21 range |
+| `INVALID_COUNT` | A requested harmony or shade count is invalid |
+| `INVALID_INDEX` | `baseIndex` does not identify a palette color |
+| `INVALID_PALETTE` | A palette passed to an exporter violates the `Palette` contract |
+| `PALETTE_TOO_LARGE` | More than 64 colors were supplied |
+| `UNSUPPORTED_FORMAT` | An unknown export format reached the runtime API |
 
 ## Development
 
@@ -187,15 +232,18 @@ npm ci
 npm run check
 ```
 
-The release gate checks formatting and lint rules, TypeScript, tests and coverage thresholds, both module builds, and an installed-package ESM/CommonJS smoke test. See [CONTRIBUTING.md](CONTRIBUTING.md) for the full workflow and [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for package invariants and extension guidance.
+The release gate checks formatting and lint rules, TypeScript, tests and coverage thresholds, both
+module builds, packed ESM/CommonJS runtime and type consumers, and the installed license. See
+[CONTRIBUTING.md](CONTRIBUTING.md) for the full workflow and
+[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for package invariants and extension guidance.
 
-## Migration and support
+## Support and releases
 
-- Migrating from an earlier prerelease snapshot: [MIGRATION.md](MIGRATION.md)
 - Reporting a vulnerability: [SECURITY.md](SECURITY.md)
 - Release history: [CHANGELOG.md](CHANGELOG.md)
 
-Coloristic Core follows Semantic Versioning. While the version is `0.x`, minor releases may contain breaking API changes documented in the migration guide.
+Coloristic Core follows Semantic Versioning. Patch releases preserve the public API; while the
+version is `0.x`, minor releases may contain breaking changes documented in the changelog.
 
 ## License
 

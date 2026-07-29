@@ -48,7 +48,37 @@ try {
     JSON.stringify({ name: "coloristic-core-smoke-consumer", private: true, type: "module" }),
   );
 
-  run(["install", "--ignore-scripts", "--no-audit", "--no-fund", tarball], { cwd: consumerRoot });
+  // `npm ci` has already populated the caller's cache. Reusing it with `--offline`
+  // keeps the release gate deterministic and independent of registry availability.
+  run(["install", "--offline", "--ignore-scripts", "--no-audit", "--no-fund", tarball], {
+    cwd: consumerRoot,
+  });
+
+  const installedPackageRoot = join(consumerRoot, "node_modules", "@coloristic.org", "core");
+  const [sourceManifestText, installedManifestText, sourceLicense, installedLicense] =
+    await Promise.all([
+      readFile(join(packageRoot, "package.json"), "utf8"),
+      readFile(join(installedPackageRoot, "package.json"), "utf8"),
+      readFile(join(packageRoot, "LICENSE"), "utf8"),
+      readFile(join(installedPackageRoot, "LICENSE"), "utf8"),
+    ]);
+  const sourceManifest = JSON.parse(sourceManifestText);
+  const installedManifest = JSON.parse(installedManifestText);
+  assert.equal(installedManifest.name, sourceManifest.name, "Installed package name changed");
+  assert.equal(
+    installedManifest.version,
+    sourceManifest.version,
+    "Installed package version changed",
+  );
+  assert.equal(
+    installedManifest.license,
+    sourceManifest.license,
+    "Installed license metadata changed",
+  );
+  assert.ok(sourceLicense.trim().length > 0, "Source LICENSE must not be empty");
+  assert.match(sourceLicense, /^MIT License$/m, "Source LICENSE must contain the MIT heading");
+  assert.match(sourceLicense, /Yasir Dora/, "Source LICENSE must identify the copyright holder");
+  assert.equal(installedLicense, sourceLicense, "Installed LICENSE does not match the source file");
 
   const esmSource = `
     import assert from "node:assert/strict";
@@ -72,6 +102,61 @@ try {
   execFileSync(process.execPath, ["esm-smoke.mjs"], { cwd: consumerRoot, stdio: "inherit" });
   execFileSync(process.execPath, ["cjs-smoke.cjs"], { cwd: consumerRoot, stdio: "inherit" });
 
+  const esmTypesSource = `
+    import {
+      createPalette,
+      exportPalette,
+      getContrastRatio,
+      type Palette,
+    } from "@coloristic.org/core";
+    const palette: Palette = createPalette({ baseColor: "#2563eb" });
+    const ratio: number = getContrastRatio(palette.roles.onPrimary, palette.roles.primary);
+    const colors: readonly string[] = palette.colors;
+    const css: string = exportPalette(palette, "css");
+    const ase: Uint8Array = exportPalette(palette, "ase");
+    void [ratio, colors, css, ase];
+    // @ts-expect-error The packed ESM declaration must reject invalid source types.
+    createPalette({ baseColor: 42 });
+  `;
+  const cjsTypesSource = `
+    import core = require("@coloristic.org/core");
+    const palette: core.Palette = core.createPalette({ baseColor: "#2563eb" });
+    const ratio: number = core.getContrastRatio(palette.roles.onSurface, palette.roles.surface);
+    const colors: readonly string[] = palette.colors;
+    const css: string = core.exportPalette(palette, "css");
+    const ase: Uint8Array = core.exportPalette(palette, "ase");
+    void [ratio, colors, css, ase];
+    // @ts-expect-error The packed CommonJS declaration must reject invalid source types.
+    core.getContrastRatio("#000000", 42);
+  `;
+  const consumerTsconfig = {
+    compilerOptions: {
+      exactOptionalPropertyTypes: true,
+      lib: ["ES2022"],
+      module: "NodeNext",
+      moduleResolution: "NodeNext",
+      noEmit: true,
+      noUncheckedIndexedAccess: true,
+      skipLibCheck: false,
+      strict: true,
+      target: "ES2022",
+      types: [],
+      verbatimModuleSyntax: true,
+    },
+    include: ["esm-types.mts", "cjs-types.cts"],
+  };
+  await writeFile(join(consumerRoot, "esm-types.mts"), esmTypesSource);
+  await writeFile(join(consumerRoot, "cjs-types.cts"), cjsTypesSource);
+  await writeFile(
+    join(consumerRoot, "tsconfig.json"),
+    `${JSON.stringify(consumerTsconfig, null, 2)}\n`,
+  );
+  const typescriptCompiler = resolve(packageRoot, "node_modules", "typescript", "bin", "tsc");
+  execFileSync(process.execPath, [typescriptCompiler, "--project", "tsconfig.json"], {
+    cwd: consumerRoot,
+    stdio: "inherit",
+  });
+
   const packageList = JSON.parse(await readFile(join(temporaryRoot, "package-list.json"), "utf8"));
   const paths = new Set(packageList.map((file) => file.path));
   for (const required of [
@@ -85,8 +170,11 @@ try {
   ]) {
     assert.ok(paths.has(required), `Packed package is missing ${required}`);
   }
+  assert.ok(!paths.has("MIGRATION.md"), "Packed package contains the obsolete migration guide");
 
-  console.log("Package smoke test passed for ESM and CommonJS consumers.");
+  console.log(
+    "Package smoke test passed for ESM/CommonJS runtime and type consumers, including the license.",
+  );
 } finally {
   assertSafeTemporaryPath(temporaryRoot);
   await rm(temporaryRoot, { force: true, recursive: true });
