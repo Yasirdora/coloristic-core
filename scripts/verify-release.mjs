@@ -117,7 +117,7 @@ if (
   throw new Error(`CHANGELOG.md contains an invalid release date for ${version}.`);
 }
 
-const repositoryUrl = "https://github.com/yasirdora/coloristic-core";
+const repositoryUrl = "https://github.com/Yasirdora/coloristic-core";
 const changelogLines = new Set(changelog.split(/\r?\n/));
 const expectedUnreleasedLink = `[Unreleased]: ${repositoryUrl}/compare/${expectedTag}...HEAD`;
 if (!changelogLines.has(expectedUnreleasedLink)) {

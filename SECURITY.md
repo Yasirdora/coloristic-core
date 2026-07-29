@@ -11,7 +11,7 @@ Until Coloristic Core reaches 1.0, security fixes are applied to the latest publ
 
 ## Report a vulnerability
 
-Do not open a public issue. Submit a [private GitHub security advisory](https://github.com/yasirdora/coloristic-core/security/advisories/new) with:
+Do not open a public issue. Submit a [private GitHub security advisory](https://github.com/Yasirdora/coloristic-core/security/advisories/new) with:
 
 - the affected version and environment;
 - a minimal reproduction or proof of concept;

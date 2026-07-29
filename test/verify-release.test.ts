@@ -25,7 +25,7 @@ function changelog(headingCount: number, previousVersion: string): string {
     { length: headingCount },
     () => `## [${VERSION}] - 2026-07-29\n\n- Fixture release.`,
   ).join("\n\n");
-  return `# Changelog\n\n## [Unreleased]\n\n${headings}\n\n[Unreleased]: https://github.com/yasirdora/coloristic-core/compare/v${VERSION}...HEAD\n[${VERSION}]: https://github.com/yasirdora/coloristic-core/compare/v${previousVersion}...v${VERSION}\n`;
+  return `# Changelog\n\n## [Unreleased]\n\n${headings}\n\n[Unreleased]: https://github.com/Yasirdora/coloristic-core/compare/v${VERSION}...HEAD\n[${VERSION}]: https://github.com/Yasirdora/coloristic-core/compare/v${previousVersion}...v${VERSION}\n`;
 }
 
 async function createFixture(options: FixtureOptions = {}): Promise<string> {

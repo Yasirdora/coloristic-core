@@ -1,6 +1,6 @@
 # Coloristic Core
 
-[![CI](https://github.com/yasirdora/coloristic-core/actions/workflows/ci.yml/badge.svg)](https://github.com/yasirdora/coloristic-core/actions/workflows/ci.yml)
+[![CI](https://github.com/Yasirdora/coloristic-core/actions/workflows/ci.yml/badge.svg)](https://github.com/Yasirdora/coloristic-core/actions/workflows/ci.yml)
 [![npm](https://img.shields.io/npm/v/@coloristic.org/core)](https://www.npmjs.com/package/@coloristic.org/core)
 [![license: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 

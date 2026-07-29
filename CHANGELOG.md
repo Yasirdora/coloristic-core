@@ -32,6 +32,6 @@ All notable changes are documented here. This project follows [Semantic Versioni
 - ESM, CommonJS, and TypeScript declaration builds.
 - Automated formatting, linting, coverage, package-install smoke tests, and trusted npm publishing gates.
 
-[Unreleased]: https://github.com/yasirdora/coloristic-core/compare/v0.1.1...HEAD
-[0.1.1]: https://github.com/yasirdora/coloristic-core/compare/v0.1.0...v0.1.1
-[0.1.0]: https://github.com/yasirdora/coloristic-core/tree/v0.1.0
+[Unreleased]: https://github.com/Yasirdora/coloristic-core/compare/v0.1.1...HEAD
+[0.1.1]: https://github.com/Yasirdora/coloristic-core/compare/v0.1.0...v0.1.1
+[0.1.0]: https://github.com/Yasirdora/coloristic-core/tree/v0.1.0
