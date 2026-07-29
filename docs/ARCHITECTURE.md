@@ -1,6 +1,9 @@
 # Architecture
 
-Coloristic Core is a pure TypeScript library with one public barrel, no network or storage behavior, and no UI-framework dependency.
+Coloristic Core is a pure TypeScript library with one public barrel, no network or storage behavior,
+no UI-framework dependency, and no consumer-installed runtime dependencies. The repository vendors
+the audited Culori primitives used by the engine as readable, unminified code and ships their MIT
+attribution in `THIRD_PARTY_NOTICES.md`.
 
 ## Invariants
 

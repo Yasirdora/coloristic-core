@@ -13,6 +13,10 @@ function run(args, options = {}) {
   return execFileSync(npmCommand, args, {
     cwd: options.cwd ?? packageRoot,
     encoding: "utf8",
+    env: {
+      ...process.env,
+      npm_config_cache: join(temporaryRoot, "npm-cache"),
+    },
     stdio: options.capture ? "pipe" : "inherit",
   });
 }
@@ -56,13 +60,25 @@ try {
   });
 
   const installedPackageRoot = join(consumerRoot, "node_modules", "@coloristic.org", "core");
-  const [sourceManifestText, installedManifestText, sourceLicense, installedLicense] =
-    await Promise.all([
-      readFile(join(packageRoot, "package.json"), "utf8"),
-      readFile(join(installedPackageRoot, "package.json"), "utf8"),
-      readFile(join(packageRoot, "LICENSE"), "utf8"),
-      readFile(join(installedPackageRoot, "LICENSE"), "utf8"),
-    ]);
+  const [
+    sourceManifestText,
+    installedManifestText,
+    sourceLicense,
+    installedLicense,
+    sourceNotices,
+    installedNotices,
+    installedEsm,
+    installedCjs,
+  ] = await Promise.all([
+    readFile(join(packageRoot, "package.json"), "utf8"),
+    readFile(join(installedPackageRoot, "package.json"), "utf8"),
+    readFile(join(packageRoot, "LICENSE"), "utf8"),
+    readFile(join(installedPackageRoot, "LICENSE"), "utf8"),
+    readFile(join(packageRoot, "THIRD_PARTY_NOTICES.md"), "utf8"),
+    readFile(join(installedPackageRoot, "THIRD_PARTY_NOTICES.md"), "utf8"),
+    readFile(join(installedPackageRoot, "dist", "index.js"), "utf8"),
+    readFile(join(installedPackageRoot, "dist", "index.cjs"), "utf8"),
+  ]);
   const sourceManifest = JSON.parse(sourceManifestText);
   const installedManifest = JSON.parse(installedManifestText);
   assert.equal(installedManifest.name, sourceManifest.name, "Installed package name changed");
@@ -80,6 +96,51 @@ try {
   assert.match(sourceLicense, /^MIT License$/m, "Source LICENSE must contain the MIT heading");
   assert.match(sourceLicense, /Yasir Dora/, "Source LICENSE must identify the copyright holder");
   assert.equal(installedLicense, sourceLicense, "Installed LICENSE does not match the source file");
+  assert.match(sourceNotices, /Culori/, "Third-party notices must identify Culori");
+  assert.match(sourceNotices, /Dan Burzo/, "Third-party notices must retain Culori attribution");
+  assert.equal(
+    installedNotices,
+    sourceNotices,
+    "Installed third-party notices do not match the source file",
+  );
+  for (const section of ["dependencies", "optionalDependencies", "peerDependencies"]) {
+    assert.equal(
+      Object.keys(installedManifest[section] ?? {}).length,
+      0,
+      `Installed package must not declare ${section}`,
+    );
+  }
+  for (const scriptName of ["preinstall", "install", "postinstall"]) {
+    assert.equal(
+      installedManifest.scripts?.[scriptName],
+      undefined,
+      `Installed package must not declare a ${scriptName} lifecycle script`,
+    );
+  }
+  assert.doesNotMatch(installedEsm, /from\s+["']culori["']/, "ESM build externalizes Culori");
+  assert.doesNotMatch(installedCjs, /require\(["']culori["']\)/, "CJS build externalizes Culori");
+  for (const [label, source] of [
+    ["ESM", installedEsm],
+    ["CommonJS", installedCjs],
+  ]) {
+    const longestLine = Math.max(...source.split(/\r?\n/).map((line) => line.length));
+    assert.ok(longestLine <= 1_000, `${label} build contains a minified-looking long line`);
+    assert.doesNotMatch(
+      source,
+      /\beval\s*\(|\bnew\s+Function\s*\(/,
+      `${label} build executes code dynamically`,
+    );
+    assert.doesNotMatch(
+      source,
+      /\b(?:fetch|XMLHttpRequest|WebSocket)\s*\(/,
+      `${label} build accesses the network`,
+    );
+    assert.doesNotMatch(
+      source,
+      /(?:from\s+|require\()["']node:(?:child_process|fs|http|https|net|tls)/,
+      `${label} build imports a privileged Node.js module`,
+    );
+  }
 
   const esmSource = `
     import assert from "node:assert/strict";
@@ -164,6 +225,7 @@ try {
     "package.json",
     "README.md",
     "LICENSE",
+    "THIRD_PARTY_NOTICES.md",
     "dist/index.js",
     "dist/index.cjs",
     "dist/index.d.ts",

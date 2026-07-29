@@ -1,4 +1,4 @@
-import { formatHex, oklch, parse, toGamut, type Oklch } from "culori";
+import { formatHex, oklch, type Oklch, parse, toGamut } from "./vendor/culori.js";
 import { normalizeColor } from "./color.js";
 import { ColoristicError } from "./errors.js";
 import { MAX_PALETTE_SIZE, type HarmonyMode } from "./types.js";

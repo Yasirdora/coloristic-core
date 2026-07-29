@@ -1,4 +1,4 @@
-import { converter, differenceEuclidean, formatHex, toGamut } from "culori";
+import { converter, differenceEuclidean, formatHex, toGamut } from "./vendor/culori.js";
 import { getContrastRatio, suggestContrastFix, validateContrastTarget } from "./accessibility.js";
 import { normalizeColors } from "./color.js";
 import { ColoristicError } from "./errors.js";
