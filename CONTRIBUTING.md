@@ -8,7 +8,7 @@ By participating, you agree to follow the [Code of Conduct](CODE_OF_CONDUCT.md).
 
 - Search existing issues and pull requests.
 - Open an issue before large API changes or new export formats.
-- Use a [private security advisory](https://github.com/yasirdora/coloristic-core/security/advisories/new) for vulnerabilities.
+- Use a [private security advisory](https://github.com/Yasirdora/coloristic-core/security/advisories/new) for vulnerabilities.
 - Keep changes focused; unrelated refactors make color-math review harder.
 
 ## Local development
@@ -74,7 +74,7 @@ Prefer behavioral tests over implementation details. Include exact boundary case
 The automated publisher uses npm trusted publishing and intentionally has no long-lived npm token. Before enabling releases:
 
 1. Confirm that the maintainer's npm account has write access to the `@coloristic.org` scope.
-2. Create a protected GitHub environment named `npm` in `yasirdora/coloristic-core` and restrict it to release tags or require approval.
+2. Create a protected GitHub environment named `npm` in `Yasirdora/coloristic-core` and restrict it to release tags or require approval.
 3. Because npm requires a package to exist before a trusted publisher can be attached, publish the first version manually with two-factor authentication, then create the trusted-publisher binding before any later release.
 4. In the `@coloristic.org/core` npm package settings, bind GitHub user `yasirdora`, repository `coloristic-core`, workflow filename `release.yml`, environment `npm`, and the `npm publish` permission.
 5. Confirm that the repository is public if provenance is required, and remove obsolete automation tokens after the OIDC publisher succeeds.

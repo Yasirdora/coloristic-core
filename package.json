@@ -19,11 +19,11 @@
   "license": "MIT",
   "homepage": "https://coloristic.org",
   "bugs": {
-    "url": "https://github.com/yasirdora/coloristic-core/issues"
+    "url": "https://github.com/Yasirdora/coloristic-core/issues"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/yasirdora/coloristic-core.git"
+    "url": "git+https://github.com/Yasirdora/coloristic-core.git"
   },
   "type": "module",
   "sideEffects": false,
