@@ -48,9 +48,10 @@ try {
     JSON.stringify({ name: "coloristic-core-smoke-consumer", private: true, type: "module" }),
   );
 
-  // `npm ci` has already populated the caller's cache. Reusing it with `--offline`
-  // keeps the release gate deterministic and independent of registry availability.
-  run(["install", "--offline", "--ignore-scripts", "--no-audit", "--no-fund", tarball], {
+  // Prefer the caller's cache, but allow npm to fetch exact runtime dependencies.
+  // A clean `npm ci` does not guarantee that dependency tarballs remain available
+  // for a second, strictly offline consumer installation.
+  run(["install", "--prefer-offline", "--ignore-scripts", "--no-audit", "--no-fund", tarball], {
     cwd: consumerRoot,
   });
 
