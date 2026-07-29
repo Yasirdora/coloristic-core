@@ -5,7 +5,7 @@ import {
   toGamut,
   wcagContrast,
   type Oklch,
-} from "culori";
+} from "./vendor/culori.js";
 import { normalizeColor, normalizeColors } from "./color.js";
 import { ColoristicError } from "./errors.js";
 import type {

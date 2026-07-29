@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto";
 import { readFile } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -6,11 +7,15 @@ const defaultPackageRoot = resolve(dirname(fileURLToPath(import.meta.url)), ".."
 const packageRoot = process.env.COLORISTIC_RELEASE_ROOT
   ? resolve(process.env.COLORISTIC_RELEASE_ROOT)
   : defaultPackageRoot;
-const [packageText, lockText, changelog] = await Promise.all([
-  readFile(resolve(packageRoot, "package.json"), "utf8"),
-  readFile(resolve(packageRoot, "package-lock.json"), "utf8"),
-  readFile(resolve(packageRoot, "CHANGELOG.md"), "utf8"),
-]);
+const [packageText, lockText, changelog, thirdPartyNotices, vendoredCulori, vendorMetadata] =
+  await Promise.all([
+    readFile(resolve(packageRoot, "package.json"), "utf8"),
+    readFile(resolve(packageRoot, "package-lock.json"), "utf8"),
+    readFile(resolve(packageRoot, "CHANGELOG.md"), "utf8"),
+    readFile(resolve(packageRoot, "THIRD_PARTY_NOTICES.md"), "utf8"),
+    readFile(resolve(packageRoot, "src/vendor/culori.js"), "utf8"),
+    readFile(resolve(packageRoot, "src/vendor/README.md"), "utf8"),
+  ]);
 const packageJson = JSON.parse(packageText);
 const packageLock = JSON.parse(lockText);
 const rawTag = process.argv[2] ?? process.env.RELEASE_TAG ?? process.env.GITHUB_REF_NAME;
@@ -92,12 +97,38 @@ for (const section of [
   assertMatchingSection(section, lockRoot);
 }
 
-const culoriVersion = packageJson.dependencies?.culori;
-if (typeof culoriVersion !== "string" || !stableVersionPattern.test(culoriVersion)) {
-  throw new Error("The runtime Culori dependency must be pinned to an exact stable version.");
+for (const section of ["dependencies", "optionalDependencies", "peerDependencies"]) {
+  if (sortedEntries(packageJson[section], `package.json ${section}`).length > 0) {
+    throw new Error(`The published package must not declare ${section}.`);
+  }
 }
-if (packageLock.packages?.["node_modules/culori"]?.version !== culoriVersion) {
-  throw new Error("The locked Culori package does not match the exact package.json version.");
+for (const scriptName of ["preinstall", "install", "postinstall"]) {
+  if (packageJson.scripts?.[scriptName] !== undefined) {
+    throw new Error(`The published package must not declare a ${scriptName} lifecycle script.`);
+  }
+}
+
+for (const dependencyName of ["culori", "@types/culori"]) {
+  if (packageJson.devDependencies?.[dependencyName] !== undefined) {
+    throw new Error(`${dependencyName} must not remain in the published package manifest.`);
+  }
+  if (packageLock.packages?.[`node_modules/${dependencyName}`] !== undefined) {
+    throw new Error(`${dependencyName} must not remain in the package lock.`);
+  }
+}
+if (!thirdPartyNotices.includes("Culori") || !thirdPartyNotices.includes("Dan Burzo")) {
+  throw new Error("THIRD_PARTY_NOTICES.md must include the Culori attribution.");
+}
+if (!vendoredCulori.startsWith("/* Culori 4.0.2 — MIT — Copyright (c) 2018 Dan Burzo.")) {
+  throw new Error("The vendored Culori snapshot must identify its version, license, and author.");
+}
+const longestVendoredLine = Math.max(...vendoredCulori.split(/\r?\n/).map((line) => line.length));
+if (longestVendoredLine > 1_000) {
+  throw new Error("The vendored Culori snapshot contains a minified-looking long line.");
+}
+const vendoredCuloriSha256 = createHash("sha256").update(vendoredCulori).digest("hex");
+if (!vendorMetadata.includes(`Snapshot SHA-256: \`${vendoredCuloriSha256}\``)) {
+  throw new Error("The vendored Culori snapshot does not match its recorded SHA-256 digest.");
 }
 
 const escapedVersion = escapeRegExp(version);
@@ -141,5 +172,5 @@ if (
 }
 
 console.log(
-  `Verified ${name} ${version}: canonical tag, package lock, pinned parser, and changelog (${releaseDate}).`,
+  `Verified ${name} ${version}: canonical tag, dependency-free runtime, audited vendored source, attribution, and changelog (${releaseDate}).`,
 );

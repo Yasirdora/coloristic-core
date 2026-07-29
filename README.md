@@ -6,7 +6,8 @@
 
 An accessibility-aware TypeScript color engine for deterministic OKLCH palettes, semantic UI roles, WCAG contrast audits, and production-ready design-token exports. The official project website is [coloristic.org](https://coloristic.org).
 
-Coloristic Core is framework-independent, makes no network requests, and works in Node.js 20+ and modern browser toolchains.
+Coloristic Core is framework-independent, makes no network requests, has no runtime dependencies,
+and works in Node.js 20+ and modern browser toolchains.
 
 > **Accessibility scope:** generated palettes are not universally accessible by themselves. The semantic `on*` colors are generated to meet their paired role's configured WCAG contrast target. Always test the actual UI, typography, states, and user workflows.
 
@@ -46,10 +47,11 @@ const tokens = exportPalette(palette, "dtcg");
 
 Output is deterministic within a release: the same valid input and options produce the same
 strings or bytes on supported runtimes. The engine uses no randomness, clock, locale, storage,
-or network state, and declares and tests Culori `4.0.2`. A consumer-level override can replace
-that resolution. Output compatibility is not promised across different Coloristic Core releases;
-preserve the tested dependency resolution and retain fixtures when exact serialized output is part
-of your application's contract.
+network state, or runtime dependency resolution. The readable distribution includes an audited,
+vendored snapshot of the Culori `4.0.2` parser and conversion primitives used by the engine; its MIT
+attribution is included in `THIRD_PARTY_NOTICES.md`. Output compatibility is not promised across
+different Coloristic Core releases, so retain fixtures when exact serialized output is part of your
+application's contract.
 
 ## Create palettes
 

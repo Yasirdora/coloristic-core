@@ -1,4 +1,4 @@
-import { converter, formatHex, hsl, oklch, parse, rgb, toGamut } from "culori";
+import { converter, formatHex, hsl, oklch, parse, rgb, toGamut } from "./vendor/culori.js";
 import { ColoristicError } from "./errors.js";
 import { MAX_PALETTE_SIZE, type ColorValues } from "./types.js";
 

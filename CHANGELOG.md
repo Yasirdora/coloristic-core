@@ -4,11 +4,22 @@ All notable changes are documented here. This project follows [Semantic Versioni
 
 ## [Unreleased]
 
-## [0.1.2] - 2026-07-31
+## [0.1.2] - 2026-08-01
+
+### Security
+
+- Removed the consumer-facing Culori runtime dependency and its pre-minified package artifacts from
+  the installed dependency tree. Coloristic Core now vendors its audited parser and conversion
+  primitives as readable, unminified code with the upstream MIT attribution included.
 
 ### Performance
 
 - **accessibility:** optimize contrast search bounds to break early on floating-point precision limits, saving CPU cycles (#42)
+
+### Changed
+
+- Added release and package-smoke assertions that prevent runtime dependencies, external Culori
+  imports, or missing third-party attribution from returning in future releases.
 
 ### Build
 
@@ -43,6 +54,7 @@ All notable changes are documented here. This project follows [Semantic Versioni
 - ESM, CommonJS, and TypeScript declaration builds.
 - Automated formatting, linting, coverage, package-install smoke tests, and trusted npm publishing gates.
 
-[Unreleased]: https://github.com/Yasirdora/coloristic-core/compare/v0.1.1...HEAD
+[Unreleased]: https://github.com/Yasirdora/coloristic-core/compare/v0.1.2...HEAD
+[0.1.2]: https://github.com/Yasirdora/coloristic-core/compare/v0.1.1...v0.1.2
 [0.1.1]: https://github.com/Yasirdora/coloristic-core/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/Yasirdora/coloristic-core/tree/v0.1.0
