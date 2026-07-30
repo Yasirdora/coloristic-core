@@ -206,6 +206,9 @@ function suggestContrastFixNormalized(
       } else {
         low = progress;
       }
+
+      // Break early if we've reached floating-point precision limits
+      if (high - low < 0.0001) break;
     }
 
     const candidateValue = toOklch(closestPassing);
