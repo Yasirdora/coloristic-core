@@ -4,6 +4,17 @@ All notable changes are documented here. This project follows [Semantic Versioni
 
 ## [Unreleased]
 
+## [0.1.2] - 2026-07-31
+
+### Performance
+
+- **accessibility:** optimize contrast search bounds to break early on floating-point precision limits, saving CPU cycles (#42)
+
+### Build
+
+- **deps:** bump vitest from 4.1.9 to 4.1.10 (#44)
+- **ci:** automated codebase formatting (#45)
+
 ## [0.1.1] - 2026-07-29
 
 ### Fixed
