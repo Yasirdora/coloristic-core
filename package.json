@@ -1,6 +1,6 @@
 {
   "name": "@coloristic.org/core",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Generate accessibility-aware semantic color palettes and production-ready design tokens.",
   "keywords": [
     "accessibility",
