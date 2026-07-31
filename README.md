@@ -245,6 +245,7 @@ module builds, packed ESM/CommonJS runtime and type consumers, and the installed
 Coloristic Core follows Semantic Versioning. Patch releases preserve the public API; while the
 version is `0.x`, minor releases may contain breaking changes documented in the changelog.
 
+
 ## License
 
 [MIT](LICENSE) © 2026 [Yasir Dora.](https://ysr.design)
